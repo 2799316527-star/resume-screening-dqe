@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0f2027">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="apple-touch-icon" href="/icon-192x192.png">
+    <title>智能招聘分析系统</title>
+    <style>
+        :root { --primary: #00d2ff; --secondary: #3a7bd5; --success: #11998e; --warning: #f0932b; --danger: #eb4d4b; --dark: #0f2027; }
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; background: linear-gradient(135deg, var(--dark) 0%, #203a43 50%, #2c5364 100%); min-height: 100vh; padding: 10px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        .header { text-align: center; color: white; margin-bottom: 20px; padding-top: 10px; }
+        .header h1 { font-size: 1.8rem; margin-bottom: 8px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); }
+        .header p { font-size: 0.9rem; opacity: 0.9; }
+
+        .step-tabs { display: flex; justify-content: center; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+        .step-tab { padding: 8px 16px; background: rgba(255,255,255,0.1); color: white; border: 2px solid rgba(255,255,255,0.2); border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: all 0.3s; }
+        .step-tab.active { background: var(--primary); color: var(--dark); border-color: var(--primary); }
+        .step-tab.done { background: var(--success); color: white; border-color: var(--success); }
+
+        .card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.2); margin-bottom: 20px; }
+        .card-title { font-size: 1.15rem; font-weight: 600; color: #333; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid var(--primary); display: flex; align-items: center; gap: 8px; }
+
+        .input-group { margin-bottom: 15px; }
+        .input-label { font-weight: 600; color: #333; margin-bottom: 6px; display: block; font-size: 0.9rem; }
+        .input-field { width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 0.95rem; font-family: inherit; transition: border-color 0.3s; }
+        .input-field:focus { outline: none; border-color: var(--primary); }
+        .input-field.textarea { height: 150px; resize: vertical; }
+
+        .btn { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: 600; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(0, 210, 255, 0.4); }
+        .btn:active { transform: translateY(0); }
+        .btn-secondary { background: #9e9e9e; background-image: none; }
+
+        .analysis-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media (min-width: 900px) { .analysis-grid { grid-template-columns: 1fr 1fr; } }
+
+        .jd-summary { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); padding: 15px; border-radius: 10px; margin-bottom: 15px; }
+        .summary-item { margin-bottom: 8px; font-size: 0.85rem; }
+        .summary-label { font-weight: 600; color: #2e7d32; width: 80px; display: inline-block; }
+
+        .score-card { text-align: center; padding: 20px; background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); border-radius: 10px; margin-bottom: 15px; }
+        .total-score { font-size: 3rem; font-weight: bold; color: var(--secondary); margin-bottom: 8px; }
+        .match-level { font-size: 1.1rem; font-weight: 600; margin-top: 8px; padding: 6px 12px; display: inline-block; border-radius: 15px; }
+        .match-level.excellent { background: #d4edda; color: #155724; }
+        .match-level.good { background: #fff3cd; color: #856404; }
+        .match-level.poor { background: #f8d7da; color: #721c24; }
+
+        .dimension-scores { margin-top: 15px; }
+        .dimension-item { margin-bottom: 12px; }
+        .dimension-header { display: flex; justify-content: space-between; margin-bottom: 6px; font-weight: 600; color: #333; font-size: 0.9rem; }
+        .progress-bar { height: 10px; background: #e0e0e0; border-radius: 5px; overflow: hidden; }
+        .progress-fill { height: 100%; border-radius: 5px; transition: width 0.5s ease; }
+        .progress-fill.excellent { background: linear-gradient(90deg, var(--success), #38ef7d); }
+        .progress-fill.good { background: linear-gradient(90deg, #f093fb, #f5576c); }
+        .progress-fill.poor { background: linear-gradient(90deg, var(--warning), var(--danger)); }
+
+        .analysis-section { margin-top: 15px; padding: 12px; background: #f8f9fa; border-radius: 8px; }
+        .analysis-title { font-weight: 600; color: #333; margin-bottom: 8px; font-size: 0.95rem; }
+        .analysis-item { padding: 6px 0; border-bottom: 1px solid #e0e0e0; font-size: 0.85rem; }
+        .analysis-item:last-child { border-bottom: none; }
+        .analysis-item.positive { color: #155724; }
+        .analysis-item.negative { color: #721c24; }
+        .analysis-item.neutral { color: #856404; }
+
+        .script-section { margin-bottom: 20px; }
+        .script-header { display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: 600; color: #333; margin-bottom: 12px; padding: 8px 12px; background: #f5f5f5; border-radius: 6px; }
+        .script-content { background: #fff; border: 1px solid #e0e0e0; border-radius: 10px; padding: 15px; margin-bottom: 8px; }
+        .script-text { font-size: 0.9rem; line-height: 1.7; color: #333; }
+        .script-text strong { color: var(--secondary); }
+
+        .question-list { margin-top: 12px; }
+        .question-item { margin-bottom: 8px; padding: 10px 12px; background: #f8f9fa; border-left: 3px solid var(--secondary); border-radius: 0 6px 6px 0; font-size: 0.85rem; color: #444; }
+        .question-item.missing { background: #fff3cd; border-left-color: var(--warning); }
+        .question-item.highlight { background: #e8f5e9; border-left-color: var(--success); }
+
+        .copy-btn { float: right; padding: 4px 10px; background: var(--secondary); color: white; border: none; border-radius: 4px; font-size: 0.75rem; cursor: pointer; transition: background 0.2s; }
+        .copy-btn:hover { background: #2d6bb3; }
+
+        .missing-section { background: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px; padding: 12px; margin-bottom: 15px; }
+        .missing-title { font-weight: 600; color: #856404; margin-bottom: 8px; font-size: 0.95rem; }
+        .missing-item { margin-bottom: 6px; font-size: 0.85rem; color: #856404; }
+
+        .candidate-info { background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); padding: 12px; border-radius: 8px; margin-bottom: 15px; }
+        .info-row { display: flex; margin-bottom: 6px; font-size: 0.85rem; }
+        .info-label { width: 70px; font-weight: 600; color: #2e7d32; }
+
+        .rule-section { background: #f8f9fa; border-radius: 6px; padding: 12px; margin-bottom: 12px; }
+        .rule-title { font-weight: 600; color: #333; margin-bottom: 8px; font-size: 0.9rem; }
+        .rule-item { margin-bottom: 6px; font-size: 0.85rem; color: #555; }
+
+        .requirement-match { margin-top: 15px; }
+        .requirement-item { margin-bottom: 10px; padding: 12px; background: #fff; border-radius: 8px; border-left: 4px solid; transition: all 0.3s; }
+        .requirement-item.fulfilled { border-left-color: var(--success); background: #f8fff9; }
+        .requirement-item.partial { border-left-color: var(--warning); background: #fffef5; }
+        .requirement-item.missing { border-left-color: var(--danger); background: #fff5f5; }
+        .req-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .req-text { font-weight: 600; color: #333; font-size: 0.9rem; }
+        .req-status { font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; }
+        .req-status.fulfilled { background: #d4edda; color: #155724; }
+        .req-status.partial { background: #fff3cd; color: #856404; }
+        .req-status.missing { background: #f8d7da; color: #721c24; }
+        .req-detail { font-size: 0.8rem; color: #666; margin-top: 4px; }
+
+        .empty-state { text-align: center; padding: 40px 20px; color: #999; }
+
+        .git-section { background: #f5f7fa; border-radius: 8px; padding: 15px; margin-top: 20px; }
+        .git-title { font-weight: 600; color: #333; margin-bottom: 10px; font-size: 0.95rem; }
+        .git-code { background: #2d2d2d; color: #f8f8f2; padding: 10px; border-radius: 6px; font-family: 'Consolas', monospace; font-size: 0.8rem; overflow-x: auto; margin-bottom: 10px; }
+        .git-info { font-size: 0.85rem; color: #555; line-height: 1.6; }
+
+        .share-btn { background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%); margin-top: 15px; }
+
+        @media (max-width: 600px) {
+            body { padding: 8px; }
+            .header h1 { font-size: 1.4rem; }
+            .input-field.textarea { height: 120px; }
+            .total-score { font-size: 2.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔮 智能招聘分析系统</h1>
+            <p>输入JD → 生成规则 → 分析简历 → 生成话术</p>
+        </div>
+
+        <div class="step-tabs">
+            <div class="step-tab active" id="step1">📝 1. 输入JD</div>
+            <div class="step-tab" id="step2">⚙️ 2. 生成规则</div>
+            <div class="step-tab" id="step3">📊 3. 分析简历</div>
+        </div>
+
+        <div id="step1Content" class="card">
+            <div class="card-title">📝 输入岗位JD和要求</div>
+            <div class="input-group">
+                <label class="input-label">岗位名称</label>
+                <input type="text" class="input-field" id="jobTitle" placeholder="例如：DQE工程师、前端开发">
+            </div>
+            <div class="input-group">
+                <label class="input-label">核心职责</label>
+                <textarea class="input-field textarea" id="jobResponsibilities" placeholder="请逐条输入核心职责&#10;1. 负责...&#10;2. 制定..."></textarea>
+            </div>
+            <div class="input-group">
+                <label class="input-label">任职要求</label>
+                <textarea class="input-field textarea" id="jobRequirements" placeholder="请逐条输入任职要求&#10;1. 熟悉...&#10;2. 熟练运用...&#10;3. 本科以上学历..."></textarea>
+            </div>
+            <div class="input-group">
+                <label class="input-label">产品线/行业</label>
+                <input type="text" class="input-field" id="productLine" placeholder="例如：智能摄像头、母婴产品">
+            </div>
+            <button class="btn" onclick="generateRules()">⚙️ 生成筛选评分规则</button>
+        </div>
+
+        <div id="step2Content" class="card" style="display: none;">
+            <div class="card-title">⚙️ 生成的筛选评分规则</div>
+            <div class="jd-summary" id="jdSummary"></div>
+            
+            <div style="margin-bottom: 15px;">
+                <h3 style="margin-bottom: 8px; color: #333; font-size: 1rem;">📊 评分维度与权重</h3>
+                <div id="dimensionRules"></div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <h3 style="margin-bottom: 8px; color: #333; font-size: 1rem;">📋 逐条任职要求匹配规则</h3>
+                <div id="requirementRules"></div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <h3 style="margin-bottom: 8px; color: #333; font-size: 1rem;">🔑 关键词匹配规则</h3>
+                <div id="keywordRules"></div>
+            </div>
+
+            <div class="git-section">
+                <div class="git-title">📦 Git部署分享</div>
+                <div class="git-info">将系统部署到服务器后，手机和电脑都可以访问使用：</div>
+                <div class="git-code">git init<br>git add universal_recruitment_system.html<br>git commit -m "Add recruitment analysis system"<br>git remote add origin <your-repo-url><br>git push -u origin main</div>
+                <div class="git-info">部署后访问地址：<strong>https://your-domain.com/universal_recruitment_system.html</strong></div>
+                <div class="git-info" style="color: #11998e;">💡 手机访问后可添加到主屏幕，体验接近原生App</div>
+            </div>
+
+            <button class="btn" onclick="showStep3()">📄 进入简历分析</button>
+            <button class="btn btn-secondary" style="margin-top: 10px;" onclick="showStep1()">← 返回修改JD</button>
+        </div>
+
+        <div id="step3Content" class="card" style="display: none;">
+            <div class="card-title">📄 粘贴候选人简历</div>
+            <textarea class="input-field textarea" id="resumeInput" style="height: 200px;" placeholder="请在此粘贴候选人简历内容..."></textarea>
+            <button class="btn" onclick="analyzeResume()">🔍 开始分析</button>
+
+            <div class="analysis-grid" id="resultGrid" style="display: none; margin-top: 20px;">
+                <div>
+                    <h3 style="margin-bottom: 12px; color: #333; font-size: 1rem;">📊 简历筛选评分</h3>
+                    <div class="score-card">
+                        <div class="total-score" id="totalScore">0</div>
+                        <div class="match-level" id="matchLevel">待分析</div>
+                    </div>
+                    <div class="dimension-scores" id="dimensionScores"></div>
+                    
+                    <div style="margin-top: 20px;">
+                        <h3 style="margin-bottom: 12px; color: #333; font-size: 1rem;">✅ 逐条任职要求匹配</h3>
+                        <div class="requirement-match" id="requirementMatch"></div>
+                    </div>
+
+                    <div class="analysis-section">
+                        <div class="analysis-title">🔍 关键匹配点分析</div>
+                        <div id="analysisItems"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="margin-bottom: 12px; color: #333; font-size: 1rem;">💬 针对性沟通话术</h3>
+                    <div class="candidate-info" id="candidateInfo"></div>
+                    <div class="missing-section" id="missingSection">
+                        <div class="missing-title">⚠️ 简历缺失项与重点追问</div>
+                        <div id="missingItems"></div>
+                    </div>
+
+                    <div class="script-section">
+                        <div class="script-header">🎯 开场破冰</div>
+                        <div class="script-content">
+                            <div class="script-text" id="openingScript"></div>
+                            <button class="copy-btn" onclick="copyText('openingScript')">复制</button>
+                        </div>
+                    </div>
+
+                    <div class="script-section">
+                        <div class="script-header">📊 公司与职位介绍</div>
+                        <div class="script-content">
+                            <div class="script-text" id="companyScript"></div>
+                            <button class="copy-btn" onclick="copyText('companyScript')">复制</button>
+                        </div>
+                    </div>
+
+                    <div class="script-section">
+                        <div class="script-header">🔍 关键问题挖掘</div>
+                        <div class="script-content">
+                            <div class="script-text">根据简历分析结果，以下问题重点针对缺失项验证：</div>
+                            <div class="question-list" id="questionList"></div>
+                        </div>
+                    </div>
+
+                    <div class="script-section">
+                        <div class="script-header">🎯 意向了解与结束</div>
+                        <div class="script-content">
+                            <div class="script-text" id="closingScript"></div>
+                            <button class="copy-btn" onclick="copyText('closingScript')">复制</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="empty-state" id="emptyState">
+                <div style="font-size: 3rem; margin-bottom: 15px;">📄</div>
+                <p>请粘贴简历内容并点击分析按钮</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let jobData = {};
+        let customRules = {};
+
+        function showStep1() {
+            updateTabs(1);
+            document.getElementById('step1Content').style.display = 'block';
+            document.getElementById('step2Content').style.display = 'none';
+            document.getElementById('step3Content').style.display = 'none';
+        }
+
+        function showStep2() {
+            updateTabs(2);
+            document.getElementById('step1Content').style.display = 'none';
+            document.getElementById('step2Content').style.display = 'block';
+            document.getElementById('step3Content').style.display = 'none';
+        }
+
+        function showStep3() {
+            updateTabs(3);
+            document.getElementById('step1Content').style.display = 'none';
+            document.getElementById('step2Content').style.display = 'none';
+            document.getElementById('step3Content').style.display = 'block';
+        }
+
+        function updateTabs(activeStep) {
+            for (let i = 1; i <= 3; i++) {
+                const tab = document.getElementById(`step${i}`);
+                if (i < activeStep) tab.className = 'step-tab done';
+                else if (i === activeStep) tab.className = 'step-tab active';
+                else tab.className = 'step-tab';
+            }
+        }
+
+        function generateRules() {
+            const title = document.getElementById('jobTitle').value.trim();
+            const responsibilities = document.getElementById('jobResponsibilities').value.trim();
+            const requirements = document.getElementById('jobRequirements').value.trim();
+            const productLine = document.getElementById('productLine').value.trim();
+
+            if (!title || !requirements) {
+                alert('请至少填写岗位名称和任职要求');
+                return;
+            }
+
+            jobData = { title, responsibilities, requirements, productLine };
+            customRules = parseJD(title, responsibilities, requirements, productLine);
+
+            displayRules();
+            showStep2();
+        }
+
+        function parseJD(title, responsibilities, requirements, productLine) {
+            const rules = {
+                title,
+                productLine,
+                dimensions: [
+                    { name: '学历经验', weight: 20 },
+                    { name: '专业技能', weight: 35 },
+                    { name: '项目经验', weight: 25 },
+                    { name: '软技能', weight: 20 }
+                ],
+                keywords: { '学历经验': [], '专业技能': [], '项目经验': [], '软技能': [] },
+                experience: {},
+                requirements: []
+            };
+
+            const reqLines = requirements.split(/\n/).filter(line => line.trim().length > 0);
+            
+            reqLines.forEach(line => {
+                const cleanLine = line.replace(/^[\d\.\-\*]+\s*/, '').trim();
+                if (cleanLine.length > 0) {
+                    rules.requirements.push({
+                        text: cleanLine,
+                        keywords: extractKeywords(cleanLine),
+                        category: classifyRequirement(cleanLine)
+                    });
+                }
+            });
+
+            const expMatch = requirements.match(/(\d+)\s*年[\s\S]*?经验|经验.*?(\d+)\s*年/);
+            if (expMatch) rules.experience.minYears = parseInt(expMatch[1] || expMatch[2]);
+
+            rules.requirements.forEach(req => {
+                req.keywords.forEach(kw => {
+                    const cat = req.category;
+                    if (!rules.keywords[cat].some(k => k.word.toLowerCase() === kw.toLowerCase())) {
+                        rules.keywords[cat].push({ word: kw, points: calculatePoints(kw) });
+                    }
+                });
+            });
+
+            const eduKeywords = ['本科', '学士', 'bachelor', '硕士', '研究生', 'master', '博士', 'phd'];
+            eduKeywords.forEach(k => {
+                if (requirements.includes(k) && !rules.keywords['学历经验'].some(x => x.word === k)) {
+                    rules.keywords['学历经验'].push({ word: k, points: 5 });
+                }
+            });
+
+            return rules;
+        }
+
+        function extractKeywords(text) {
+            const keywords = [];
+            const techPatterns = [
+                /(pfmea|apqp|qfd|iso9001|spc|msa|8d|fmea|ppap)\b/gi,
+                /(java|python|javascript|react|vue|angular|node|golang|c\+\+|sql|mysql|redis)\b/gi,
+                /(产品设计|需求分析|原型设计|prd|竞品分析|用户研究)/g,
+                /(可靠性|测试|质量|品质|缺陷|不良)/g,
+                /(audio|音频|声学|消费电子|智能硬件|摄像头|门铃|门锁)/gi,
+                /(全生命周期|立项|研发|试产|量产|新品|ctq)/gi,
+                /(rma|客户投诉|客诉|认证|测试认证|可靠性认证)/gi,
+                /(沟通|协调|跨部门|团队协作|供应商|研发|产品经理)/g,
+                /(分析|根因|问题分析|数据分析|解决问题)/g,
+                /(客户|市场|用户体验|客户角度)/g,
+                /(项目管理|时间管理|优先级|执行力)/g
+            ];
+
+            techPatterns.forEach(pattern => {
+                const matches = text.match(pattern);
+                if (matches) {
+                    matches.forEach(m => keywords.push(m.toLowerCase()));
+                }
+            });
+
+            return [...new Set(keywords)];
+        }
+
+        function classifyRequirement(text) {
+            const lower = text.toLowerCase();
+            if (lower.includes('学历') || lower.includes('经验') || lower.includes('年')) return '学历经验';
+            if (lower.includes('熟悉') || lower.includes('掌握') || lower.includes('技能') || lower.includes('工具')) return '专业技能';
+            if (lower.includes('项目') || lower.includes('负责') || lower.includes('主导') || lower.includes('参与')) return '项目经验';
+            if (lower.includes('沟通') || lower.includes('协调') || lower.includes('团队') || lower.includes('能力')) return '软技能';
+            return '专业技能';
+        }
+
+        function calculatePoints(word) {
+            const highValue = ['pfmea', 'apqp', 'qfd', 'iso9001', 'java', 'python', 'react', 'vue', '可靠性', '全生命周期', 'rma'];
+            if (highValue.includes(word.toLowerCase())) return 6;
+            return 4;
+        }
+
+        function displayRules() {
+            document.getElementById('jdSummary').innerHTML = `
+                <div class="summary-item"><span class="summary-label">岗位：</span>${customRules.title}</div>
+                <div class="summary-item"><span class="summary-label">产品线：</span>${customRules.productLine || '未指定'}</div>
+                <div class="summary-item"><span class="summary-label">最低经验：</span>${customRules.experience.minYears || '未指定'}年</div>
+                <div class="summary-item"><span class="summary-label">要求条数：</span>${customRules.requirements.length}条</div>
+            `;
+
+            let dimHtml = '';
+            customRules.dimensions.forEach(dim => {
+                dimHtml += `
+                    <div class="rule-section">
+                        <div class="rule-title">📊 ${dim.name} (${dim.weight}分)</div>
+                        <div class="rule-item">关键关键词：${customRules.keywords[dim.name]?.map(k => k.word).join('、') || '无'}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('dimensionRules').innerHTML = dimHtml;
+
+            let reqHtml = '';
+            customRules.requirements.forEach((req, index) => {
+                reqHtml += `
+                    <div class="rule-section">
+                        <div class="rule-title">📋 要求${index + 1}：${req.text.substring(0, 30)}${req.text.length > 30 ? '...' : ''}</div>
+                        <div class="rule-item">分类：${req.category}</div>
+                        <div class="rule-item">关键词：${req.keywords.join('、') || '无'}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('requirementRules').innerHTML = reqHtml;
+
+            let kwHtml = '';
+            Object.keys(customRules.keywords).forEach(cat => {
+                if (customRules.keywords[cat].length > 0) {
+                    kwHtml += `
+                        <div class="rule-section">
+                            <div class="rule-title">🔑 ${cat}</div>
+                            ${customRules.keywords[cat].map(k => `<div class="rule-item">${k.word} (+${k.points}分)</div>`).join('')}
+                        </div>
+                    `;
+                }
+            });
+            document.getElementById('keywordRules').innerHTML = kwHtml;
+        }
+
+        function analyzeResume() {
+            const resume = document.getElementById('resumeInput').value.trim();
+            if (!resume) {
+                alert('请先粘贴简历内容');
+                return;
+            }
+
+            const analysis = analyzeResumeWithRules(resume);
+            displayAnalysisResults(analysis);
+
+            document.getElementById('emptyState').style.display = 'none';
+            document.getElementById('resultGrid').style.display = 'grid';
+        }
+
+        function analyzeResumeWithRules(resume) {
+            const lowerResume = resume.toLowerCase();
+            const scores = {};
+            const analysisItems = [];
+            const missingItems = [];
+            const requirementMatches = [];
+
+            customRules.dimensions.forEach(dim => scores[dim.name] = 0);
+
+            scores['学历经验'] = analyzeEduExp(resume, analysisItems, missingItems);
+            scores['专业技能'] = analyzeSkills(resume, '专业技能', analysisItems, missingItems);
+            scores['项目经验'] = analyzeSkills(resume, '项目经验', analysisItems, missingItems);
+            scores['软技能'] = analyzeSkills(resume, '软技能', analysisItems, missingItems);
+
+            customRules.requirements.forEach((req, index) => {
+                const match = checkRequirementMatch(req, resume);
+                requirementMatches.push({
+                    index: index + 1,
+                    text: req.text,
+                    status: match.status,
+                    matchedKeywords: match.matched,
+                    unmatchedKeywords: match.unmatched,
+                    detail: match.detail
+                });
+
+                if (match.status === 'missing') {
+                    missingItems.push({ category: req.category, item: `要求${index + 1}：${req.text}`, level: 'high' });
+                } else if (match.status === 'partial') {
+                    missingItems.push({ category: req.category, item: `要求${index + 1}：${req.text}（部分匹配）`, level: 'medium' });
+                }
+            });
+
+            const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
+
+            return { scores, totalScore, analysisItems, missingItems, requirementMatches, info: extractCandidateInfo(resume) };
+        }
+
+        function checkRequirementMatch(req, resume) {
+            const lowerResume = resume.toLowerCase();
+            const matched = [];
+            const unmatched = [];
+
+            req.keywords.forEach(kw => {
+                if (lowerResume.includes(kw.toLowerCase())) {
+                    matched.push(kw);
+                } else {
+                    unmatched.push(kw);
+                }
+            });
+
+            if (matched.length === req.keywords.length && req.keywords.length > 0) {
+                return { status: 'fulfilled', matched, unmatched, detail: `匹配关键词：${matched.join('、')}` };
+            } else if (matched.length > 0 && unmatched.length > 0) {
+                return { status: 'partial', matched, unmatched, detail: `已匹配：${matched.join('、')} | 未匹配：${unmatched.join('、')}` };
+            } else if (req.keywords.length === 0) {
+                const hasContent = lowerResume.includes(req.text.substring(0, 10).toLowerCase()) || 
+                                  lowerResume.includes(req.text.substring(req.text.length - 10).toLowerCase());
+                return hasContent ? 
+                    { status: 'fulfilled', matched: [], unmatched: [], detail: '内容相关匹配' } :
+                    { status: 'partial', matched: [], unmatched: [], detail: '未明确提及' };
+            } else {
+                return { status: 'missing', matched, unmatched, detail: `未匹配关键词：${unmatched.join('、')}` };
+            }
+        }
+
+        function extractCandidateInfo(resume) {
+            const info = { name: '', currentCompany: '', experience: 0, education: '' };
+            const nameMatch = resume.match(/姓\s*名[\s:：]*([^\n\r]+)|([^\n\r]{2,4})\s*[同]学|([^\n\r]{2,4})\s*\/\s*[^\n\r]+/);
+            if (nameMatch) info.name = (nameMatch[1] || nameMatch[2] || nameMatch[3] || '').trim().replace(/[\s,，。、]/g, '');
+            const companyMatch = resume.match(/[在现]?[\s]*([^\n\r]{4,20})\s*[公]?[司]/);
+            if (companyMatch) info.currentCompany = companyMatch[1].trim();
+            const expMatch = resume.match(/(\d+)\s*年[\s\S]*?经验|工作经验.*?(\d+)\s*年|(\d+)\s*年.*?工作/);
+            if (expMatch) info.experience = parseInt(expMatch[1] || expMatch[2] || expMatch[3] || 0);
+            info.education = /硕士|研究生|master/i.test(resume) ? '硕士' : (/本科|学士|bachelor/i.test(resume) ? '本科' : '未知');
+            return info;
+        }
+
+        function analyzeEduExp(resume, items, missing) {
+            let score = 0;
+            const lowerResume = resume.toLowerCase();
+            const minExp = customRules.experience.minYears || 3;
+            let experienceYears = 0;
+
+            const expMatch = resume.match(/(\d+)\s*年[\s\S]*?经验|工作经验.*?(\d+)\s*年|(\d+)\s*年.*?工作/);
+            if (expMatch) experienceYears = parseInt(expMatch[1] || expMatch[2] || expMatch[3] || 0);
+
+            const dateMatch = resume.match(/(\d{4})[\s\-/]?(\d{1,2})?[\s\S]*?至今|(\d{4})[\s\-/]?(\d{1,2})?[\s\S]*?(\d{4})[\s\-/]?(\d{1,2})?/);
+            if (dateMatch && (dateMatch[1] || dateMatch[3])) {
+                const startYear = parseInt(dateMatch[1] || dateMatch[3]);
+                const endYear = dateMatch[5] ? parseInt(dateMatch[5]) : new Date().getFullYear();
+                const calculatedYears = endYear - startYear;
+                if (calculatedYears > experienceYears) experienceYears = calculatedYears;
+            }
+
+            if (experienceYears >= minExp) {
+                score = 10;
+                items.push({ type: 'positive', text: `✅ ${experienceYears}年经验，符合要求（需${minExp}年）` });
+            } else {
+                score = Math.min(experienceYears * 2, 8);
+                items.push({ type: 'negative', text: `❌ ${experienceYears}年经验，低于要求（需${minExp}年）` });
+                missing.push({ category: '学历经验', item: `经验年限不足（${experienceYears}年 vs 要求${minExp}年）`, level: 'high' });
+            }
+
+            if (/硕士|研究生|master/i.test(resume)) { score += 5; items.push({ type: 'positive', text: '✅ 硕士学历' }); }
+            else if (/本科|学士|bachelor/i.test(resume)) { score += 3; items.push({ type: 'positive', text: '✅ 本科学历' }); }
+            else { missing.push({ category: '学历经验', item: '学历未明确提及', level: 'medium' }); }
+
+            return Math.min(score, 20);
+        }
+
+        function analyzeSkills(resume, category, items, missing) {
+            let score = 0;
+            const lowerResume = resume.toLowerCase();
+            const maxScore = customRules.dimensions.find(d => d.name === category)?.weight || 20;
+
+            customRules.keywords[category]?.forEach(kw => {
+                if (lowerResume.includes(kw.word.toLowerCase())) {
+                    score += kw.points;
+                    items.push({ type: 'positive', text: `✅ 具备${kw.word}经验` });
+                } else {
+                    missing.push({ category, item: `${kw.word}经验`, level: 'medium' });
+                }
+            });
+
+            return Math.min(score, maxScore);
+        }
+
+        function displayAnalysisResults(analysis) {
+            document.getElementById('totalScore').textContent = analysis.totalScore;
+            
+            const matchLevel = document.getElementById('matchLevel');
+            if (analysis.totalScore >= 70) {
+                matchLevel.textContent = '🌟 强烈推荐面试';
+                matchLevel.className = 'match-level excellent';
+            } else if (analysis.totalScore >= 60) {
+                matchLevel.textContent = '⚡ 可考虑进入面试';
+                matchLevel.className = 'match-level good';
+            } else {
+                matchLevel.textContent = '❌ 暂不推荐';
+                matchLevel.className = 'match-level poor';
+            }
+
+            let dimHtml = '';
+            customRules.dimensions.forEach(dim => {
+                const score = analysis.scores[dim.name] || 0;
+                const percentage = (score / dim.weight) * 100;
+                let barClass = 'progress-fill poor';
+                if (percentage >= 80) barClass = 'progress-fill excellent';
+                else if (percentage >= 50) barClass = 'progress-fill good';
+                
+                dimHtml += `
+                    <div class="dimension-item">
+                        <div class="dimension-header">
+                            <span>${dim.name} (${dim.weight}分)</span>
+                            <span>${score}/${dim.weight}</span>
+                        </div>
+                        <div class="progress-bar"><div class="${barClass}" style="width: ${percentage}%"></div></div>
+                    </div>
+                `;
+            });
+            document.getElementById('dimensionScores').innerHTML = dimHtml;
+
+            let reqMatchHtml = '';
+            analysis.requirementMatches.forEach(req => {
+                let statusClass = req.status;
+                let statusText = req.status === 'fulfilled' ? '✅ 已满足' : (req.status === 'partial' ? '⚠️ 部分满足' : '❌ 未满足');
+                let statusBadge = req.status === 'fulfilled' ? 'fulfilled' : (req.status === 'partial' ? 'partial' : 'missing');
+                
+                reqMatchHtml += `
+                    <div class="requirement-item ${statusClass}">
+                        <div class="req-header">
+                            <span class="req-text">要求${req.index}：${req.text}</span>
+                            <span class="req-status ${statusBadge}">${statusText}</span>
+                        </div>
+                        <div class="req-detail">${req.detail}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('requirementMatch').innerHTML = reqMatchHtml;
+
+            const analysisContainer = document.getElementById('analysisItems');
+            analysisContainer.innerHTML = '';
+            analysis.analysisItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `analysis-item ${item.type}`;
+                div.textContent = item.text;
+                analysisContainer.appendChild(div);
+            });
+
+            const info = analysis.info;
+            document.getElementById('candidateInfo').innerHTML = `
+                <div class="info-row"><span class="info-label">姓名：</span><span>${info.name || '未知'}</span></div>
+                <div class="info-row"><span class="info-label">公司：</span><span>${info.currentCompany || '未知'}</span></div>
+                <div class="info-row"><span class="info-label">经验：</span><span>${info.experience}年</span></div>
+                <div class="info-row"><span class="info-label">学历：</span><span>${info.education}</span></div>
+            `;
+
+            const uniqueMissing = analysis.missingItems.filter((item, index, self) => 
+                index === self.findIndex(t => t.category === item.category && t.item === item.item)
+            ).slice(0, 10);
+
+            const missingHtml = uniqueMissing.map(m => 
+                `<div class="missing-item">${m.level === 'high' ? '🔴' : '🟡'} ${m.item}</div>`
+            ).join('');
+            document.getElementById('missingItems').innerHTML = missingHtml || '<div class="missing-item">🟢 简历各维度匹配度较好，无明显缺失项</div>';
+
+            generateScripts(info, uniqueMissing);
+        }
+
+        function generateScripts(info, missing) {
+            const name = info.name || '候选人';
+            const company = info.currentCompany || '目前的公司';
+            const title = customRules.title;
+            const productLine = customRules.productLine || '相关产品';
+
+            document.getElementById('openingScript').innerHTML = `
+                <strong>猎头：</strong>您好，请问是<strong>${name}</strong>吗？<br>
+                <strong>候选人：</strong>是的，请问你是？<br>
+                <strong>猎头：</strong>您好，我是<strong>[你的名字]</strong>，来自<strong>[猎头公司名称]</strong>。打扰您几分钟，是想和您沟通一个非常匹配的<strong>${title}</strong>职位机会，不知道您现在方便吗？
+            `;
+
+            document.getElementById('companyScript').innerHTML = `
+                <strong>猎头：</strong>这次推荐的是一家<strong>[上市公司/行业龙头/快速成长]</strong>的公司，专注于${productLine}领域。<br><br>
+                这个<strong>${title}</strong>岗位机会非常不错，团队氛围好，公司重视人才发展，薪资待遇也很有竞争力。<br><br>
+                您目前在<strong>${company}</strong>负责什么类型的工作呢？
+            `;
+
+            const questions = generateTargetedQuestions(info, missing);
+            let questionsHtml = '';
+            questions.forEach(q => {
+                questionsHtml += `<div class="question-item ${q.type}">${q.text}</div>`;
+            });
+            document.getElementById('questionList').innerHTML = questionsHtml;
+
+            document.getElementById('closingScript').innerHTML = `
+                <strong>猎头：</strong>对于这个<strong>${title}</strong>机会，您最感兴趣的是什么？有没有什么顾虑或想了解的地方？<br><br>
+                <strong>猎头：</strong>方便问一下您目前的薪资情况和预期吗？如果流程顺利，您大概什么时候可以到岗？<br><br>
+                <strong>猎头：</strong>好的，非常感谢您的时间！我会把您的情况整理后推荐给用人部门，后续有消息会及时联系您。这是我的联系方式<strong>[电话/微信]</strong>，您有任何问题随时可以联系我。
+            `;
+        }
+
+        function generateTargetedQuestions(info, missing) {
+            const questions = [];
+
+            const eduMissing = missing.find(m => m.category === '学历经验' && m.level === 'high');
+            if (eduMissing) {
+                questions.push({
+                    type: 'missing',
+                    text: `了解到您有${info.experience}年工作经验，能否详细说说您在${customRules.title}相关领域的核心工作经历？您认为这段经历中最能体现您专业能力的项目是什么？`
+                });
+            }
+
+            const highMissing = missing.filter(m => m.level === 'high').slice(0, 4);
+            highMissing.forEach(m => {
+                const cleanItem = m.item.replace(/^要求\d+：/, '');
+                questions.push({
+                    type: 'missing',
+                    text: `您的简历中没有明确提及${cleanItem}相关经验。能否详细谈谈您在这方面的能力和经验？`
+                });
+            });
+
+            const mediumMissing = missing.filter(m => m.level === 'medium').slice(0, 3);
+            mediumMissing.forEach(m => {
+                questions.push({
+                    type: '',
+                    text: `您在${m.item}方面有哪些经验？能否分享一个相关的项目案例？`
+                });
+            });
+
+            if (questions.length === 0) {
+                questions.push({
+                    type: 'highlight',
+                    text: '您的背景与这个岗位匹配度很高，能否详细谈谈您最擅长的技能和项目经验？'
+                });
+            }
+
+            questions.push({
+                type: '',
+                text: `您接下来的职业规划是怎样的？这个${customRules.title}岗位是否符合您的职业发展方向？`
+            });
+
+            return questions;
+        }
+
+        function copyText(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '已复制！';
+                setTimeout(() => btn.textContent = originalText, 2000);
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '已复制！';
+                setTimeout(() => btn.textContent = originalText, 2000);
+            });
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then((registration) => {
+                        console.log('Service Worker registered: ', registration);
+                    })
+                    .catch((error) => {
+                        console.log('Service Worker registration failed: ', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
