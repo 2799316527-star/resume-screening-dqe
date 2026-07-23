@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DQE工程师简历分析与沟通话术系统</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #11998e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .tabs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tab-btn {
+            padding: 12px 30px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: white;
+            color: #667eea;
+            border-color: white;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .resume-input {
+            width: 100%;
+            height: 300px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: none;
+            transition: border-color 0.3s;
+        }
+
+        .resume-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 16px 40px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .quick-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #1565c0;
+        }
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .score-card {
+            text-align: center;
+            padding: 30px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .total-score {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .match-level {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-top: 10px;
+            padding: 8px 16px;
+            display: inline-block;
+            border-radius: 20px;
+        }
+
+        .match-level.excellent { background: #d4edda; color: #155724; }
+        .match-level.good { background: #fff3cd; color: #856404; }
+        .match-level.poor { background: #f8d7da; color: #721c24; }
+
+        .dimension-scores {
+            margin-top: 20px;
+        }
+
+        .dimension-item {
+            margin-bottom: 15px;
+        }
+
+        .dimension-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-fill.excellent { background: linear-gradient(90deg, #11998e, #38ef7d); }
+        .progress-fill.good { background: linear-gradient(90deg, #f093fb, #f5576c); }
+        .progress-fill.poor { background: linear-gradient(90deg, #f0932b, #eb4d4b); }
+
+        .analysis-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .analysis-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .analysis-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 0.9rem;
+        }
+
+        .analysis-item:last-child { border-bottom: none; }
+        .analysis-item.positive { color: #155724; }
+        .analysis-item.negative { color: #721c24; }
+        .analysis-item.neutral { color: #856404; }
+
+        .script-section {
+            margin-bottom: 25px;
+        }
+
+        .script-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            padding: 10px 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .script-content {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 10px;
+        }
+
+        .script-text {
+            font-size: 1rem;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .script-text strong { color: #667eea; }
+
+        .question-list {
+            margin-top: 15px;
+        }
+
+        .question-item {
+            margin-bottom: 10px;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 0 8px 8px 0;
+            font-size: 0.95rem;
+            color: #444;
+        }
+
+        .question-item.missing {
+            background: #fff3cd;
+            border-left-color: #f0932b;
+        }
+
+        .question-item.highlight {
+            background: #e8f5e9;
+            border-left-color: #38ef7d;
+        }
+
+        .copy-btn {
+            float: right;
+            padding: 6px 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .copy-btn:hover { background: #5a6fd6; }
+
+        .candidate-info {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .info-label {
+            width: 80px;
+            font-weight: 600;
+            color: #2e7d32;
+        }
+
+        .missing-section {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .missing-title {
+            font-weight: 600;
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .missing-item {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #856404;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        @media (max-width: 1200px) {
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>DQE工程师简历分析与沟通话术系统</h1>
+            <p>智能摄像头/门铃门锁/母婴产品/洗消烘/智慧屏产品线</p>
+        </div>
+
+        <div class="card">
+            <div class="card-title">📋 粘贴候选人简历</div>
+            <textarea class="resume-input" id="resumeInput" placeholder="请在此粘贴候选人简历内容..."></textarea>
+            <button class="btn" id="analyzeBtn">🔍 开始分析</button>
+            <div class="quick-info">
+                <strong>评分标准：</strong>总分≥70分推荐面试 | 60-69分可考虑 | <60分不推荐
+            </div>
+        </div>
+
+        <div class="result-grid" id="resultGrid" style="display: none;">
+            <div class="card">
+                <div class="card-title">📊 简历筛选评分</div>
+                <div class="score-card">
+                    <div class="total-score" id="totalScore">0</div>
+                    <div class="match-level" id="matchLevel">待分析</div>
+                </div>
+
+                <div class="dimension-scores">
+                    <div class="dimension-item">
+                        <div class="dimension-header">
+                            <span>📚 学历经验 (20分)</span>
+                            <span id="eduScore">0/20</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" id="eduBar"></div></div>
+                    </div>
+                    <div class="dimension-item">
+                        <div class="dimension-header">
+                            <span>🛠️ 质量管理工具 (30分)</span>
+                            <span id="qualityScore">0/30</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" id="qualityBar"></div></div>
+                    </div>
+                    <div class="dimension-item">
+                        <div class="dimension-header">
+                            <span>💻 技术能力 (25分)</span>
+                            <span id="techScore">0/25</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" id="techBar"></div></div>
+                    </div>
+                    <div class="dimension-item">
+                        <div class="dimension-header">
+                            <span>📈 项目经验 (15分)</span>
+                            <span id="projectScore">0/15</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" id="projectBar"></div></div>
+                    </div>
+                    <div class="dimension-item">
+                        <div class="dimension-header">
+                            <span>💬 软技能 (10分)</span>
+                            <span id="softScore">0/10</span>
+                        </div>
+                        <div class="progress-bar"><div class="progress-fill" id="softBar"></div></div>
+                    </div>
+                </div>
+
+                <div class="analysis-section">
+                    <div class="analysis-title">🔍 关键匹配点分析</div>
+                    <div id="analysisItems"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">💬 针对性沟通话术</div>
+                
+                <div class="candidate-info" id="candidateInfo"></div>
+
+                <div class="missing-section" id="missingSection">
+                    <div class="missing-title">⚠️ 简历缺失项与重点追问</div>
+                    <div id="missingItems"></div>
+                </div>
+
+                <div class="script-section">
+                    <div class="script-header">🎯 开场破冰</div>
+                    <div class="script-content">
+                        <div class="script-text" id="openingScript"></div>
+                        <button class="copy-btn" onclick="copyText('openingScript')">复制</button>
+                    </div>
+                </div>
+
+                <div class="script-section">
+                    <div class="script-header">📊 公司与职位介绍</div>
+                    <div class="script-content">
+                        <div class="script-text" id="companyScript"></div>
+                        <button class="copy-btn" onclick="copyText('companyScript')">复制</button>
+                    </div>
+                </div>
+
+                <div class="script-section">
+                    <div class="script-header">🔍 关键问题挖掘（针对缺失项）</div>
+                    <div class="script-content">
+                        <div class="script-text">根据简历分析结果，以下问题重点针对候选人可能存在的能力短板进行验证：</div>
+                        <div class="question-list" id="questionList"></div>
+                    </div>
+                </div>
+
+                <div class="script-section">
+                    <div class="script-header">🎯 意向了解与结束</div>
+                    <div class="script-content">
+                        <div class="script-text" id="closingScript"></div>
+                        <button class="copy-btn" onclick="copyText('closingScript')">复制</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="empty-state" id="emptyState">
+            <div style="font-size: 4rem; margin-bottom: 20px;">📄</div>
+            <p>请粘贴简历内容并点击分析按钮</p>
+        </div>
+    </div>
+
+    <script>
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const resumeInput = document.getElementById('resumeInput');
+        const resultGrid = document.getElementById('resultGrid');
+        const emptyState = document.getElementById('emptyState');
+
+        analyzeBtn.addEventListener('click', function() {
+            const resume = resumeInput.value.trim();
+            if (!resume) {
+                alert('请先粘贴简历内容');
+                return;
+            }
+            analyzeAndGenerate(resume);
+        });
+
+        function analyzeAndGenerate(resume) {
+            const lowerResume = resume.toLowerCase();
+            const orgResume = resume;
+            
+            let scores = { edu: 0, quality: 0, tech: 0, project: 0, soft: 0 };
+            let analysisItems = [];
+
+            scores.edu = analyzeEducation(orgResume, analysisItems);
+            scores.quality = analyzeQualityTools(lowerResume, analysisItems);
+            scores.tech = analyzeTechnicalSkills(lowerResume, analysisItems);
+            scores.project = analyzeProjectExperience(lowerResume, analysisItems);
+            scores.soft = analyzeSoftSkills(lowerResume, analysisItems);
+
+            const totalScore = scores.edu + scores.quality + scores.tech + scores.project + scores.soft;
+            const info = extractCandidateInfo(resume);
+            const missing = identifyMissingItems(scores, lowerResume);
+
+            displayScores(scores, totalScore, analysisItems);
+            displayScripts(info, scores, missing, lowerResume);
+
+            emptyState.style.display = 'none';
+            resultGrid.style.display = 'grid';
+        }
+
+        function extractCandidateInfo(resume) {
+            const info = {
+                name: '', currentCompany: '', experience: 0, position: '', education: '',
+                hasMaster: false, hasBachelor: false, hasElectronics: false
+            };
+
+            const nameMatch = resume.match(/姓\s*名[\s:：]*([^\n\r]+)|([^\n\r]{2,4})\s*[同]学|([^\n\r]{2,4})\s*\/\s*[^\n\r]+/);
+            if (nameMatch) info.name = (nameMatch[1] || nameMatch[2] || nameMatch[3] || '').trim().replace(/[\s,，。、]/g, '');
+
+            const companyMatch = resume.match(/[在现]?[\s]*([^\n\r]{4,20})\s*[公]?[司]/);
+            if (companyMatch) info.currentCompany = companyMatch[1].trim();
+
+            const expMatch = resume.match(/(\d+)\s*年[\s\S]*?经验|工作经验.*?(\d+)\s*年|(\d+)\s*年.*?工作/);
+            if (expMatch) info.experience = parseInt(expMatch[1] || expMatch[2] || expMatch[3] || 0);
+
+            info.hasMaster = /硕士|研究生|master/i.test(resume);
+            info.hasBachelor = /本科|学士|bachelor/i.test(resume);
+            info.hasElectronics = /电子|通信|自动化|电气|机电|测控/i.test(resume);
+            info.education = info.hasMaster ? '硕士' : (info.hasBachelor ? '本科' : '未知');
+
+            return info;
+        }
+
+        function analyzeEducation(resume, items) {
+            let score = 0;
+            let hasMaster = /硕士|研究生|master/i.test(resume);
+            let hasBachelor = /本科|学士|bachelor/i.test(resume);
+            let hasElectronics = /电子|通信|自动化|电气|机电|测控/i.test(resume);
+            
+            let experienceYears = 0;
+            const expMatch = resume.match(/(\d+)\s*年[\s\S]*?经验|工作经验.*?(\d+)\s*年|(\d+)\s*年.*?工作/);
+            if (expMatch) experienceYears = parseInt(expMatch[1] || expMatch[2] || expMatch[3] || 0);
+
+            const dateMatch = resume.match(/(\d{4})[\s\-/]?(\d{1,2})?[\s\S]*?至今|(\d{4})[\s\-/]?(\d{1,2})?[\s\S]*?(\d{4})[\s\-/]?(\d{1,2})?/);
+            if (dateMatch && (dateMatch[1] || dateMatch[3])) {
+                const startYear = parseInt(dateMatch[1] || dateMatch[3]);
+                const endYear = dateMatch[5] ? parseInt(dateMatch[5]) : new Date().getFullYear();
+                const calculatedYears = endYear - startYear;
+                if (calculatedYears > experienceYears) experienceYears = calculatedYears;
+            }
+
+            if (hasMaster && experienceYears >= 3) {
+                score = 20;
+                items.push({ type: 'positive', text: '✅ 电子类硕士 + 3年以上经验，学历经验完全符合要求' });
+            } else if (hasBachelor && experienceYears >= 5) {
+                score = hasElectronics ? 18 : 16;
+                items.push({ type: 'positive', text: `✅ 本科 + ${experienceYears}年经验，基本符合要求` });
+            } else if (hasBachelor && experienceYears >= 3) {
+                score = hasElectronics ? 12 : 10;
+                items.push({ type: 'neutral', text: `⚠️ 本科 + ${experienceYears}年经验，经验年限略低于要求（需5-8年）` });
+            } else if (hasMaster && experienceYears >= 2) {
+                score = 15;
+                items.push({ type: 'neutral', text: `⚠️ 硕士 + ${experienceYears}年经验，经验年限略低于要求（需3年以上）` });
+            } else {
+                score = Math.min(experienceYears * 2, 8);
+                items.push({ type: 'negative', text: `❌ 学历或经验年限不足，当前经验约${experienceYears}年` });
+            }
+
+            if (!hasElectronics && (hasMaster || hasBachelor)) {
+                items.push({ type: 'neutral', text: '⚠️ 专业非电子类，建议关注实际技术能力' });
+            }
+
+            return Math.min(score, 20);
+        }
+
+        function analyzeQualityTools(resume, items) {
+            let score = 0;
+            const tools = [
+                { name: 'ISO9001', keywords: ['iso9001', 'iso 9001', '质量管理体系'], points: 8 },
+                { name: 'PFMEA', keywords: ['pfmea', '过程失效模式'], points: 8 },
+                { name: 'APQP', keywords: ['apqp', '产品质量先期策划'], points: 7 },
+                { name: 'QFD', keywords: ['qfd', '质量功能展开'], points: 7 }
+            ];
+
+            tools.forEach(tool => {
+                const found = tool.keywords.some(k => resume.includes(k));
+                if (found) {
+                    score += tool.points;
+                    items.push({ type: 'positive', text: `✅ 具备${tool.name}经验` });
+                } else {
+                    items.push({ type: 'neutral', text: `⚠️ 未提及${tool.name}经验` });
+                }
+            });
+
+            const otherTools = [
+                { name: 'SPC', keywords: ['spc', '统计过程控制'] },
+                { name: 'MSA', keywords: ['msa', '测量系统分析'] },
+                { name: '8D', keywords: ['8d', '8d报告', '八步法'] },
+                { name: 'FMEA', keywords: ['fmea', '失效模式分析'] },
+                { name: 'PPAP', keywords: ['ppap', '生产件批准程序'] }
+            ];
+
+            let otherCount = 0;
+            otherTools.forEach(tool => {
+                if (tool.keywords.some(k => resume.includes(k))) otherCount++;
+            });
+
+            if (otherCount > 0) {
+                const bonus = Math.min(otherCount * 2, 6);
+                score += bonus;
+                items.push({ type: 'positive', text: `✅ 额外掌握${otherCount}种质量工具（+${bonus}分）` });
+            }
+
+            return Math.min(score, 30);
+        }
+
+        function analyzeTechnicalSkills(resume, items) {
+            let score = 0;
+
+            if (resume.includes('audio') || /音频|声学/i.test(resume)) {
+                score += 10;
+                items.push({ type: 'positive', text: '✅ 具备Audio/音频产品经验' });
+            } else {
+                items.push({ type: 'neutral', text: '⚠️ 未提及Audio/音频产品经验' });
+            }
+
+            if (/消费电子|消费类电子|consumer electronics/i.test(resume)) {
+                score += 8;
+                items.push({ type: 'positive', text: '✅ 具备消费电子行业经验' });
+            } else {
+                items.push({ type: 'neutral', text: '⚠️ 未提及消费电子行业经验' });
+            }
+
+            const reliabilityKeywords = ['可靠性', 'reliability', '高低温', '振动', '跌落', '寿命测试', '环境测试', '老化测试'];
+            const hasReliability = reliabilityKeywords.some(k => resume.includes(k));
+            if (hasReliability) {
+                score += 7;
+                items.push({ type: 'positive', text: '✅ 具备可靠性测试方法经验' });
+            } else {
+                items.push({ type: 'neutral', text: '⚠️ 未提及可靠性测试经验' });
+            }
+
+            const hardwareKeywords = ['pcb', '电路图', '硬件', '电子元器件', '电路分析'];
+            const hasHardware = hardwareKeywords.some(k => resume.includes(k));
+            if (hasHardware) {
+                score += Math.min(5, 25 - score);
+                items.push({ type: 'positive', text: '✅ 具备硬件基础知识' });
+            }
+
+            return Math.min(score, 25);
+        }
+
+        function analyzeProjectExperience(resume, items) {
+            let score = 0;
+
+            const lifecycleKeywords = ['全生命周期', '立项', '研发', '试产', '量产', '批量生产', '售后服务', 'product lifecycle'];
+            if (lifecycleKeywords.some(k => resume.includes(k))) { score += 5; items.push({ type: 'positive', text: '✅ 有产品全生命周期质量管控经验' }); }
+
+            const newProductKeywords = ['新品', '新产品', '研发阶段', 'pqp', 'ctq', '成熟度分析'];
+            if (newProductKeywords.some(k => resume.includes(k))) { score += 4; items.push({ type: 'positive', text: '✅ 参与过新品研发质量策划' }); }
+
+            const certificationKeywords = ['可靠性认证', '认证', '测试认证', 'qualification'];
+            if (certificationKeywords.some(k => resume.includes(k))) { score += 3; items.push({ type: 'positive', text: '✅ 主导过可靠性认证项目' }); }
+
+            const rmaKeywords = ['rma', '客户投诉', '客诉', '8d报告', '纠正措施', '预防措施', '改善报告'];
+            if (rmaKeywords.some(k => resume.includes(k))) { score += 3; items.push({ type: 'positive', text: '✅ 有RMA/客户投诉处理经验' }); }
+
+            return Math.min(score, 15);
+        }
+
+        function analyzeSoftSkills(resume, items) {
+            let score = 0;
+
+            const communicationKeywords = ['沟通', '协调', '跨部门', '团队协作', '供应商', '研发', '产品经理', 'design house'];
+            if (communicationKeywords.some(k => resume.includes(k))) { score += 4; items.push({ type: 'positive', text: '✅ 具备沟通协调能力' }); }
+
+            const analysisKeywords = ['分析', '根因', '不良品', '质量改善', '问题分析', '数据分析'];
+            if (analysisKeywords.some(k => resume.includes(k))) { score += 3; items.push({ type: 'positive', text: '✅ 具备独立分析问题能力' }); }
+
+            const marketKeywords = ['客户', '市场', '用户体验', '客户角度', 'customer', 'market'];
+            if (marketKeywords.some(k => resume.includes(k))) { score += 3; items.push({ type: 'positive', text: '✅ 具备市场/客户意识' }); }
+
+            return Math.min(score, 10);
+        }
+
+        function identifyMissingItems(scores, resume) {
+            const missing = [];
+
+            if (scores.edu < 15) {
+                missing.push({ category: '学历经验', item: '学历或经验年限不足', level: 'high' });
+            }
+            if (!resume.includes('pfmea')) {
+                missing.push({ category: '质量管理工具', item: 'PFMEA经验', level: 'high' });
+            }
+            if (!resume.includes('apqp')) {
+                missing.push({ category: '质量管理工具', item: 'APQP经验', level: 'high' });
+            }
+            if (!resume.includes('iso9001')) {
+                missing.push({ category: '质量管理工具', item: 'ISO9001经验', level: 'medium' });
+            }
+            if (!resume.includes('qfd')) {
+                missing.push({ category: '质量管理工具', item: 'QFD经验', level: 'medium' });
+            }
+            if (!resume.includes('audio') && !/音频|声学/i.test(resume)) {
+                missing.push({ category: '技术能力', item: 'Audio/音频产品经验', level: 'medium' });
+            }
+            if (!/消费电子/i.test(resume)) {
+                missing.push({ category: '技术能力', item: '消费电子行业经验', level: 'medium' });
+            }
+            if (!/可靠性|高低温|振动|跌落/i.test(resume)) {
+                missing.push({ category: '技术能力', item: '可靠性测试经验', level: 'high' });
+            }
+            if (!/摄像头|安防|门铃|门锁/i.test(resume)) {
+                missing.push({ category: '项目经验', item: '智能安防产品经验', level: 'medium' });
+            }
+            if (!resume.includes('rma') && !/客诉|客户投诉/i.test(resume)) {
+                missing.push({ category: '项目经验', item: 'RMA/客户投诉处理经验', level: 'high' });
+            }
+            if (!/全生命周期|立项|研发|试产|量产/i.test(resume)) {
+                missing.push({ category: '项目经验', item: '产品全生命周期管理经验', level: 'medium' });
+            }
+            if (!/沟通|协调|跨部门|供应商/i.test(resume)) {
+                missing.push({ category: '软技能', item: '跨部门沟通协调能力', level: 'medium' });
+            }
+
+            return missing;
+        }
+
+        function displayScores(scores, totalScore, analysisItems) {
+            document.getElementById('totalScore').textContent = totalScore;
+            
+            const matchLevel = document.getElementById('matchLevel');
+            if (totalScore >= 70) {
+                matchLevel.textContent = '🌟 强烈推荐面试';
+                matchLevel.className = 'match-level excellent';
+            } else if (totalScore >= 60) {
+                matchLevel.textContent = '⚡ 可考虑进入面试';
+                matchLevel.className = 'match-level good';
+            } else {
+                matchLevel.textContent = '❌ 暂不推荐';
+                matchLevel.className = 'match-level poor';
+            }
+
+            updateDimension('edu', scores.edu, 20);
+            updateDimension('quality', scores.quality, 30);
+            updateDimension('tech', scores.tech, 25);
+            updateDimension('project', scores.project, 15);
+            updateDimension('soft', scores.soft, 10);
+
+            const analysisContainer = document.getElementById('analysisItems');
+            analysisContainer.innerHTML = '';
+            analysisItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = `analysis-item ${item.type}`;
+                div.textContent = item.text;
+                analysisContainer.appendChild(div);
+            });
+        }
+
+        function updateDimension(prefix, score, max) {
+            document.getElementById(`${prefix}Score`).textContent = `${score}/${max}`;
+            const bar = document.getElementById(`${prefix}Bar`);
+            const percentage = (score / max) * 100;
+            bar.style.width = `${percentage}%`;
+            
+            if (percentage >= 80) bar.className = 'progress-fill excellent';
+            else if (percentage >= 50) bar.className = 'progress-fill good';
+            else bar.className = 'progress-fill poor';
+        }
+
+        function displayScripts(info, scores, missing, resume) {
+            const name = info.name || '候选人';
+            const company = info.currentCompany || '目前的公司';
+
+            document.getElementById('candidateInfo').innerHTML = `
+                <div class="info-row"><span class="info-label">姓名：</span><span>${name}</span></div>
+                <div class="info-row"><span class="info-label">公司：</span><span>${company}</span></div>
+                <div class="info-row"><span class="info-label">经验：</span><span>${info.experience}年</span></div>
+                <div class="info-row"><span class="info-label">学历：</span><span>${info.education}</span></div>
+            `;
+
+            const missingHtml = missing.map(m => 
+                `<div class="missing-item">${m.level === 'high' ? '🔴' : '🟡'} ${m.category}：${m.item}</div>`
+            ).join('');
+            document.getElementById('missingItems').innerHTML = missingHtml || '<div class="missing-item">🟢 简历各维度匹配度较好，无明显缺失项</div>';
+
+            document.getElementById('openingScript').innerHTML = `
+                <strong>猎头：</strong>您好，请问是<strong>${name}</strong>吗？<br>
+                <strong>候选人：</strong>是的，请问你是？<br>
+                <strong>猎头：</strong>您好，我是<strong>[你的名字]</strong>，来自<strong>[猎头公司名称]</strong>。打扰您几分钟，是想和您沟通一个非常匹配的DQE工程师职位机会，不知道您现在方便吗？
+            `;
+
+            document.getElementById('companyScript').innerHTML = `
+                <strong>猎头：</strong>这次推荐的是一家<strong>[上市公司/行业龙头/快速成长]</strong>的智能硬件公司，专注于智能摄像头、智能门铃门锁、母婴产品等Edge产品线。<br><br>
+                这个DQE岗位是负责<strong>产品全生命周期质量控制</strong>，从立项到售后全程跟进。团队氛围很好，公司重视人才发展，薪资待遇也很有竞争力。<br><br>
+                您目前在<strong>${company}</strong>负责什么类型的工作呢？
+            `;
+
+            const questions = generateTargetedQuestions(info, scores, missing, resume);
+            let questionsHtml = '';
+            questions.forEach(q => {
+                questionsHtml += `<div class="question-item ${q.type}">${q.text}</div>`;
+            });
+            document.getElementById('questionList').innerHTML = questionsHtml;
+
+            document.getElementById('closingScript').innerHTML = `
+                <strong>猎头：</strong>对于这个DQE机会，您最感兴趣的是什么？有没有什么顾虑或想了解的地方？<br><br>
+                <strong>猎头：</strong>方便问一下您目前的薪资情况和预期吗？如果流程顺利，您大概什么时候可以到岗？<br><br>
+                <strong>猎头：</strong>好的，非常感谢您的时间！我会把您的情况整理后推荐给用人部门，后续有消息会及时联系您。这是我的联系方式<strong>[电话/微信]</strong>，您有任何问题随时可以联系我。
+            `;
+        }
+
+        function generateTargetedQuestions(info, scores, missing, resume) {
+            const questions = [];
+
+            const eduMissing = missing.find(m => m.category === '学历经验');
+            if (eduMissing) {
+                questions.push({
+                    type: 'missing',
+                    text: `了解到您有${info.experience}年工作经验，能否详细说说您在质量领域的核心工作经历？您认为这段经历中最能体现您专业能力的项目是什么？`
+                });
+            }
+
+            const pfmeaMissing = missing.find(m => m.item.includes('PFMEA'));
+            if (pfmeaMissing) {
+                questions.push({
+                    type: 'missing',
+                    text: '虽然您的简历中没有特别提及PFMEA经验，但质量工作中过程失效模式分析非常重要。能否谈谈您在工作中是如何识别和预防潜在质量风险的？'
+                });
+            } else {
+                questions.push({
+                    type: 'highlight',
+                    text: '您具备PFMEA经验，能否举例说明您是如何通过PFMEA来预防产品潜在质量问题的？在实际应用中遇到过哪些挑战？'
+                });
+            }
+
+            const apqpMissing = missing.find(m => m.item.includes('APQP'));
+            if (apqpMissing) {
+                questions.push({
+                    type: 'missing',
+                    text: 'APQP（产品质量先期策划）是新品研发阶段非常重要的质量工具。您在新品导入过程中，通常会参与哪些质量策划工作？能否分享一个具体案例？'
+                });
+            } else {
+                questions.push({
+                    type: 'highlight',
+                    text: '您在APQP方面有经验，在产品质量先期策划中，您认为哪个阶段最重要？为什么？在CTQ（关键质量特性）定义方面有哪些经验？'
+                });
+            }
+
+            const reliabilityMissing = missing.find(m => m.item.includes('可靠性测试'));
+            if (reliabilityMissing) {
+                questions.push({
+                    type: 'missing',
+                    text: '可靠性测试是DQE工作的核心内容之一。您对产品可靠性测试有哪些了解？在之前的工作中是否参与或主导过相关测试项目？比如高低温、振动、寿命测试等。'
+                });
+            } else {
+                questions.push({
+                    type: 'highlight',
+                    text: '您在可靠性测试方面有经验，能否谈谈您对智能硬件产品可靠性测试的理解？通常会做哪些测试项目？如何制定测试标准？'
+                });
+            }
+
+            const rmaMissing = missing.find(m => m.item.includes('RMA') || m.item.includes('客户投诉'));
+            if (rmaMissing) {
+                questions.push({
+                    type: 'missing',
+                    text: '客户投诉和RMA处理是DQE工程师的重要职责。如果遇到客户反馈的质量问题，您通常会如何处理？能否分享一个您处理过的典型案例？'
+                });
+            } else {
+                questions.push({
+                    type: 'highlight',
+                    text: '您处理过客户投诉和RMA问题，能否分享一个印象最深的案例？您是如何推动问题解决并制定纠正预防措施的？最终效果如何？'
+                });
+            }
+
+            const audioMissing = missing.find(m => m.item.includes('Audio'));
+            if (audioMissing) {
+                questions.push({
+                    type: 'missing',
+                    text: '我们的产品线涉及音频相关产品，您之前是否接触过音频产品的质量管控？如果没有，您对学习音频产品质量知识是否有信心？'
+                });
+            } else {
+                questions.push({
+                    type: 'highlight',
+                    text: '您具备Audio/音频产品经验，能否谈谈音频产品在质量管控方面有哪些特点和难点？您在这方面有哪些成功的质量改善案例？'
+                });
+            }
+
+            const lifecycleMissing = missing.find(m => m.item.includes('全生命周期'));
+            if (lifecycleMissing) {
+                questions.push({
+                    type: 'missing',
+                    text: 'DQE工程师需要参与产品从立项到售后的全生命周期质量管控。您在之前的工作中，参与过哪些阶段的质量工作？能否详细说明？'
+                });
+            } else {
+                questions.push({
+                    type: 'highlight',
+                    text: '您有产品全生命周期质量管控经验，能否谈谈在不同阶段（立项、研发、试产、量产、售后）质量工作的重点分别是什么？您在各阶段的主要职责是什么？'
+                });
+            }
+
+            const crossDepMissing = missing.find(m => m.item.includes('跨部门') || m.item.includes('沟通协调'));
+            if (crossDepMissing) {
+                questions.push({
+                    type: 'missing',
+                    text: '质量工作需要与研发、供应链、供应商等多个部门密切协作。您在之前的工作中，是如何与这些部门进行沟通和协调的？能否举一个跨部门协作的案例？'
+                });
+            } else {
+                questions.push({
+                    type: 'highlight',
+                    text: '您在跨部门协作方面经验丰富，能否分享一下您是如何推动研发、供应链和供应商进行质量改进的？在推动过程中遇到过哪些阻力，是如何解决的？'
+                });
+            }
+
+            questions.push({
+                type: '',
+                text: '您接下来的职业规划是怎样的？希望在哪些方面有所成长？这个DQE岗位是否符合您的职业发展方向？'
+            });
+
+            return questions;
+        }
+
+        function copyText(elementId) {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '已复制！';
+                setTimeout(() => btn.textContent = originalText, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
